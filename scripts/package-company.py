@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 import json
+import importlib.metadata as metadata
 import os
 from pathlib import Path
 import platform
@@ -27,7 +28,7 @@ def main():
         parser.error('Runtime license directory is required.')
     subprocess.run(['codesign', '--verify', '--strict', str(helper)], check=True)
     destination = ROOT/'release'/NAME
-    if destination.exists() or destination.with_suffix('.zip').exists():
+    if destination.exists() or Path(str(destination) + '.zip').exists():
         parser.error('Output already exists; preserve or remove the previous build explicitly.')
     env = {**os.environ, 'PYINSTALLER_CONFIG_DIR': str(ROOT/'build/pyinstaller-cache')}
     subprocess.run([sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onedir',
@@ -46,6 +47,13 @@ def main():
     for name in ['LICENSE', 'NOTICE', 'VERIFICATION.md']:
         shutil.copy2(ROOT/name, destination/name)
     shutil.copytree(args.notices, destination/'THIRD_PARTY_LICENSES')
+    for dependency in ['click', 'prompt_toolkit', 'wcwidth', 'Pygments']:
+        distribution = metadata.distribution(dependency)
+        for member in distribution.files or []:
+            if member.name.upper().startswith(('LICENSE', 'COPYING', 'AUTHORS')):
+                license_target = destination/'THIRD_PARTY_LICENSES'/dependency/str(member)
+                license_target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(distribution.locate_file(member), license_target)
     shutil.copytree(ROOT/'skills', destination/'skills')
     shutil.copy2(ROOT/'docs/zip-install.md', destination/'먼저읽기.md')
     shutil.copy2(ROOT/'scripts/install.command', destination/'설치.command')
@@ -56,7 +64,7 @@ def main():
                 'source_commit': subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip(),
                 'python': sys.version.split()[0], 'helper_sha256': hashlib.sha256((target/'Contents/MacOS/IPhoneMirroringCLI').read_bytes()).hexdigest()}
     (destination/'BUILD.json').write_text(json.dumps(manifest, indent=2)+'\n')
-    archive = destination.with_suffix('.zip')
+    archive = Path(str(destination) + '.zip')
     subprocess.run(['/usr/bin/ditto', '-c', '-k', '--keepParent', str(destination), str(archive)], check=True)
     checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
     archive.with_suffix('.zip.sha256').write_text(checksum+'  '+archive.name+'\n')

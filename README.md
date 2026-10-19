@@ -6,7 +6,8 @@ Unofficial experimental project. Not affiliated with, endorsed by, or supported 
 
 이 저장소는 소스·문서 공개용입니다. 회사 Mac에서 시험할 설치 ZIP은 별도로 전달하며,
 실행 앱·설치 ZIP을 GitHub Releases에 게시하지 않습니다. GitHub의 자동 생성 소스 ZIP은
-설치 파일이 아닙니다. [회사 Mac 시험 안내](docs/company-mac-test.md)를 참고하세요.
+설치 파일이 아닙니다. [회사 Mac 시험 안내](docs/company-mac-test.md)와
+[별도 전달 ZIP 설치 안내](docs/zip-install.md)를 참고하세요.
 
 설치된 Apple iPhone 미러링 앱을 감싸는 실험용 CLI입니다. Apple 앱이 연결·인증·
 화면 전송을 담당하고 이 도구는 Mac 쪽 UI를 관찰하거나 입력 이벤트를 전달합니다.
@@ -135,3 +136,19 @@ PATH="$PWD/.venv/bin:$PATH" CLI_ANYTHING_FORCE_INSTALLED=1 \
 [HKUDS/CLI-Anything](https://github.com/HKUDS/CLI-Anything)에서 가져와 적용했습니다.
 [NOTICE](NOTICE)와 [상위 프로젝트 라이선스](THIRD_PARTY_LICENSES/CLI-Anything-APACHE.txt)를 함께 제공합니다.
 Apple 앱 바이너리는 포함하지 않습니다. iPhone·macOS 및 관련 상표는 각 권리자에게 귀속됩니다.
+
+## 회사 테스트 ZIP 빌드
+
+Apple Silicon macOS에서 PyInstaller 6.22.3, Python 3.12.14와 런타임 라이선스 자료를 준비합니다.
+CLI 런타임은 Click 8.5.0, prompt_toolkit 3.0.53, wcwidth 0.9.2, Pygments 2.21.0을 사용했습니다.
+먼저 scripts/build.py로 보조 앱을 빌드하거나 같은 소스의 검증된 보조 앱을 사용합니다.
+
+```sh
+python scripts/package-company.py \
+  --helper agent-harness/cli_anything/iphone_mirroring/bin/IPhoneMirroringCLI.app \
+  --notices /path/to/audited-runtime-licenses
+```
+
+빌드 스크립트는 release/에 ZIP과 SHA-256 파일을 만들며 업로드하지 않습니다.
+런타임의 Python·동적 라이브러리·의존성 라이선스 자료를 --notices로 전달해야 합니다.
+배포 전 압축 해제·이동 후 실행, 앱 서명, helper 원본 일치, 문서와 라이선스를 확인하세요.
