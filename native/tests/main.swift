@@ -1,0 +1,6 @@
+precondition(isSharingIndicator(title: "Window", childTitles: ["WindowSharingSessionButton"], width: 66, height: 20))
+precondition(!isSharingIndicator(title: "Window", childTitles: [], width: 66, height: 20))
+precondition(!isSharingIndicator(title: "Window", childTitles: ["WindowSharingSessionButton"], width: 316, height: 696))
+precondition(!isSharingIndicator(title: "Settings", childTitles: ["WindowSharingSessionButton"], width: 66, height: 20))
+precondition(!isSharingIndicator(title: "Window", childTitles: ["WindowSharingSessionButton", "Confirm"], width: 66, height: 20))
+print("5 native sharing-indicator policy cases passed")

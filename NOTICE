@@ -1,0 +1,15 @@
+iPhone Mirroring CLI for macOS
+Copyright 2026 iPhone Mirroring CLI contributors
+
+UNOFFICIAL EXPERIMENTAL PROJECT
+Not affiliated with, endorsed by, or supported by Apple.
+비공식 실험용 프로젝트이며 Apple의 검토·승인·인증을 받지 않았습니다.
+
+Original project code is licensed under Apache License 2.0 (LICENSE).
+The file agent-harness/cli_anything/iphone_mirroring/utils/repl_skin.py
+is adapted from HKUDS/CLI-Anything: https://github.com/HKUDS/CLI-Anything
+Original copyright and Apache-2.0 license terms remain applicable.
+This is a custom macOS Accessibility adapter following CLI-Anything conventions.
+No Apple application binary or private service implementation is included.
+Apple, iPhone and macOS names/marks belong to their respective rights holders.
+Third-party dependencies retain their own licenses.

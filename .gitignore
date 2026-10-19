@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+release/
+artifacts/
+agent-harness/cli_anything/iphone_mirroring/bin/
+*.zip
+*.whl
+*.log
+.env
+.env.*
+.DS_Store
