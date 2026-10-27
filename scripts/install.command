@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 base_dir="$(cd -- "$(dirname -- "$0")" && pwd -P)"
-install_dir="$HOME/Applications/IPhone-Mirroring-CLI-0.1.0"
+/bin/bash "$base_dir/검증.command"
+install_dir="$HOME/Applications/IPhone-Mirroring-CLI-0.1.1"
 if [ "$(uname -m)" != "arm64" ]; then
   echo '이 패키지는 Apple Silicon Mac용입니다.'
   exit 1

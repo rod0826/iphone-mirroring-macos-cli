@@ -208,9 +208,34 @@ func navigate(_ operation: String, _ window: AXUIElement, _ app: NSRunningApplic
     try assertFocus(app)
     if operation == "home" || operation == "app-switcher" {
         let identifier = operation == "home" ? "app.grid.3x3" : "iphone.app.switcher"
-        guard let button = findElement(window, matching: { text($0, kAXIdentifierAttribute) == identifier }) else {
-            try fail("UI_CONTROL_MISSING", "The app's navigation button is unavailable; inspect the window.")
+        guard let expectedBounds = frame(window) else {
+            try fail("WINDOW_UNAVAILABLE", "Navigation window has no usable frame.")
         }
+        func validateNavigationTarget() throws {
+            try assertFocus(app)
+            let (current, bounds) = try target(app)
+            guard CFEqual(window, current), bounds == expectedBounds else {
+                try fail("WINDOW_CHANGED", "Navigation window changed; inspect before retrying.")
+            }
+        }
+        let button = try resolveNavigationControl(
+            read: { findElement(window, matching: { text($0, kAXIdentifierAttribute) == identifier }) },
+            validate: validateNavigationTarget,
+            reveal: {
+                guard ![CGMouseButton.left, .right, .center].contains(where: {
+                    CGEventSource.buttonState(.combinedSessionState, button: $0)
+                }) else { try fail("POINTER_BUSY", "Release mouse buttons before navigation.") }
+                let location = CGPoint(x: expectedBounds.midX, y: expectedBounds.minY + 20)
+                let event = CGEvent(mouseEventSource: inputSource, mouseType: .mouseMoved,
+                                    mouseCursorPosition: location, mouseButton: .left)
+                event?.flags = []
+                try post(event, app) // Hover only: no click or keyboard fallback.
+            },
+            wait: { Thread.sleep(forTimeInterval: 0.15) })
+        guard let button else {
+            try fail("UI_CONTROL_MISSING", "Navigation button stayed unavailable after hover. Move the pointer over the iPhone Mirroring toolbar and inspect; check the phone connection.")
+        }
+        try validateNavigationTarget()
         try press(button)
         return
     }

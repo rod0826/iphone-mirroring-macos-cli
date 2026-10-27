@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.1 — 2026-10-27
+
+- Fixed #1: reveal hidden Home/App Switcher controls with hover and bounded AX retries; abort on changed window/focus. Search uses the same Home path.
+- Fixed #2 distribution: one ZIP now contains SHA256SUMS and 검증.command. Installation stops before copying if verification fails; the optional external ZIP checksum is still generated.
+- Documented exit 137 diagnosis and an explicit, installation-folder-only quarantine removal option after trust/integrity checks. No automatic permission or quarantine changes.
+- Bumped helper and install directory to 0.1.1; grant Accessibility to the new helper bundle on each test Mac.
+
 ## 0.1.0 — 2026-10-19
 
 - Added an experimental CLI around the installed Apple iPhone Mirroring app.

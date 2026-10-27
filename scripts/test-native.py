@@ -8,3 +8,7 @@ subprocess.run(['xcrun', 'swiftc', '-module-cache-path', str(BUILD / 'swift-modu
                 str(ROOT / 'native/WindowPolicy.swift'), str(ROOT / 'native/tests/main.swift'),
                 '-o', str(BUILD / 'window-policy-tests')], check=True)
 subprocess.run([str(BUILD / 'window-policy-tests')], check=True)
+subprocess.run(['xcrun', 'swiftc', '-module-cache-path', str(BUILD / 'swift-module-cache'),
+                str(ROOT / 'native/NavigationPolicy.swift'), str(ROOT / 'native/tests/navigation/main.swift'),
+                '-o', str(BUILD / 'navigation-regression-tests')], check=True)
+subprocess.run([str(BUILD / 'navigation-regression-tests')], check=True)

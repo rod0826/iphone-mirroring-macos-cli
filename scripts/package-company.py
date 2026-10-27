@@ -11,7 +11,25 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = 'IPhone-Mirroring-CLI-0.1.0-company-test-arm64'
+NAME = 'IPhone-Mirroring-CLI-0.1.1-company-test-arm64'
+
+
+def finalize_archive(destination):
+    """One transferable ZIP includes hashes for its extracted files, not itself."""
+    for source, name in [('verify.command', '검증.command'), ('install.command', '설치.command')]:
+        shutil.copy2(ROOT/'scripts'/source, destination/name)
+        (destination/name).chmod(0o755)
+    entries = []
+    for path in sorted(destination.rglob('*')):
+        if path.is_file() and path.name != 'SHA256SUMS':
+            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            entries.append(digest + '  ' + path.relative_to(destination).as_posix() + '\n')
+    (destination/'SHA256SUMS').write_text(''.join(entries), encoding='utf-8')
+    archive = Path(str(destination) + '.zip')
+    subprocess.run(['/usr/bin/ditto', '-c', '-k', '--keepParent', str(destination), str(archive)], check=True)
+    checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
+    Path(str(archive) + '.sha256').write_text(checksum+'  '+archive.name+'\n')
+    return archive
 
 
 def main():
@@ -60,14 +78,12 @@ def main():
     shutil.copy2(ROOT/'scripts/start.command', destination/'시작.command')
     for item in ['설치.command', '시작.command']:
         (destination/item).chmod(0o755)
-    manifest = {'version': '0.1.0', 'architecture': 'arm64',
+    manifest = {'version': '0.1.1', 'architecture': 'arm64',
                 'source_commit': subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip(),
                 'python': sys.version.split()[0], 'helper_sha256': hashlib.sha256((target/'Contents/MacOS/IPhoneMirroringCLI').read_bytes()).hexdigest()}
     (destination/'BUILD.json').write_text(json.dumps(manifest, indent=2)+'\n')
-    archive = Path(str(destination) + '.zip')
-    subprocess.run(['/usr/bin/ditto', '-c', '-k', '--keepParent', str(destination), str(archive)], check=True)
-    checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
-    archive.with_suffix('.zip.sha256').write_text(checksum+'  '+archive.name+'\n')
+    shutil.copy2(ROOT/'docs/verification-0.1.1.md', destination/'PACKAGE-VERIFICATION.md')
+    archive = finalize_archive(destination)
     print(archive)
 
 

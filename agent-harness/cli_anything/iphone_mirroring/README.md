@@ -6,7 +6,8 @@ Unofficial experimental project. Not affiliated with, endorsed by, or supported 
 
 이 저장소는 소스·문서 공개용입니다. 회사 Mac에서 시험할 설치 ZIP은 별도로 전달하며,
 실행 앱·설치 ZIP을 GitHub Releases에 게시하지 않습니다. GitHub의 자동 생성 소스 ZIP은
-설치 파일이 아닙니다. [회사 Mac 시험 안내](docs/company-mac-test.md)와
+설치 파일이 아닙니다. 0.1.1 전달 ZIP에는 `검증.command`와 `SHA256SUMS`가 포함돼
+ZIP 하나만으로 압축 해제 파일의 무결성을 확인할 수 있습니다. [회사 Mac 시험 안내](docs/company-mac-test.md)와
 [별도 전달 ZIP 설치 안내](docs/zip-install.md)를 참고하세요.
 
 설치된 Apple iPhone 미러링 앱을 감싸는 실험용 CLI입니다. Apple 앱이 연결·인증·
@@ -77,6 +78,9 @@ cli-anything-iphone-mirroring
   요소는 현재 검증 환경에서 노출되지 않았습니다. `--output`은 기존 파일을 덮어쓰지 않습니다.
 - `launch`: 앱 실행. 연결 성공을 의미하지 않습니다.
 - `home` / `app-switcher`: Apple 앱의 실제 접근성 홈·앱 전환 버튼 호출.
+  버튼이 숨겨져 있으면 포인터를 창 상단으로 옮겨 호버로 드러낸 뒤 최대 0.75초 재조회합니다.
+  포인터를 복원하지 않으며 창·포커스가 바뀌면 중단합니다. `search`의 홈 이동도 같습니다.
+  `inspect`와 `--dry-run`은 포인터를 이동하지 않습니다.
 - `search`: 홈으로 이동하고 전환을 기다린 뒤 보기 → Spotlight 메뉴를 열어 문자열을
   입력합니다. 검색 중 다시 호출해도 동작하도록 홈에서 시작합니다. 메뉴 제목은
   현재 한국어·영어 환경을 지원합니다. 검색 결과를 선택하거나 실행하지 않습니다.
@@ -128,7 +132,8 @@ PATH="$PWD/.venv/bin:$PATH" CLI_ANYTHING_FORCE_INSTALLED=1 \
 
 단위 테스트, 실제 앱 진단, 실기기 입력 검증은 따로 기록합니다.
 실기기 미연결이나 접근성 권한 부재를 입력 성공으로 집계하지 않습니다.
-구체적인 결과는 `VERIFICATION.md`와 `agent-harness/cli_anything/iphone_mirroring/tests/TEST.md`를 보세요.
+0.1.1 회귀 검증은 `docs/verification-0.1.1.md`를 참고하세요.
+초기 PoC의 구체적인 결과는 `VERIFICATION.md`와 `agent-harness/cli_anything/iphone_mirroring/tests/TEST.md`를 보세요.
 
 ## 라이선스와 출처
 

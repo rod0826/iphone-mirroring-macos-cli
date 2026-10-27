@@ -17,7 +17,9 @@ preview bundles are not applicable or claimed.
 
 All mutation input goes over private expiring JSON IPC files, never a shell.
 LaunchServices starts the signed local .app, separating TCC attribution from
-the parent terminal/agent. Window/focus checks precede input.
+the parent terminal/agent. Window/focus checks precede input. Hidden navigation buttons trigger a mouse-move
+hover over the verified toolbar and at most five 150ms retries; checks run again
+before hover, each retry and AXPress. inspect/status/dry-run never hover.
 The helper does not request Accessibility permission. Quartz posting is
 asynchronous, so the short-lived helper stays alive briefly after posting.
 Responses acknowledge requests, not iPhone-side completion. Device observations
