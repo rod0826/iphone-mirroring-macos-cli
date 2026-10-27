@@ -14,11 +14,21 @@
 Python: 기존 단위 18 + 호스트 통합 9 + 배포 회귀 2 = 29 passed, 0 skipped (1.53초).
 Swift: 기존 공유 표시 창 정책 5 + 탐색 컨트롤 노출 정책 5 = 10사례 통과.
 Swift 네이티브 보조 앱 빌드와 ad-hoc 서명 검사 통과. 새 보조 앱 doctor는 Apple 앱 1.6을 확인하고 permission_prompted=false를 반환했습니다.
+사용자 승인과 직접 시스템 인증 후 해당 0.1.1 항목만 제거·재등록하여 accessibility_trusted=true를 확인했습니다.
 
 호스트 통합 테스트의 AX 관찰은 새 서명의 Accessibility 권한 부재를 명시적 ACCESSIBILITY_REQUIRED로 반환했습니다. 이를 실기기 입력 성공으로 집계하지 않습니다.
 
 ## 실제 기기 재검증 범위
 
-개발 Mac에서 Apple 앱은 iPhone 사용으로 인한 연결 시간 초과 상태였고, 새 보조 앱 접근성 허용도 필요했습니다. 이번 수정의 실제 iPhone 호버·탐색과 회사 Mac의 Gatekeeper 동작은 아직 재검증하지 않았습니다. 이전 0.1.0의 입력 결과는 VERIFICATION.md에 별도로 보존합니다.
+개발 Mac의 최초 연결 시간 초과 후 재연결하여 0.1.1 home의 실제 홈 화면 복귀를 확인했습니다.
+search는 Spotlight 화면까지 열렸으나 검색어 입력은 확인되지 않았고, 뒤이어 Apple 앱에 연결 중단 및 iPhone을 찾을 수 없음이 표시됐습니다. 연결 불안정과 분리해 입력 문제를 판정하지 못했으므로 검색 입력 성공으로 기록하지 않습니다.
+이 Mac의 입력 직전 AX에서는 탐색 버튼이 이미 노출돼 있어, 회사에서 보고한 최초 AX 2노드 상태 자체는 재현하지 못했습니다. 숨은 버튼의 자동 호버는 가짜 UI 회귀 테스트로 검증했으며 실제 해당 조건은 회사 Mac에서 재확인이 필요합니다.
+회사 Mac의 Gatekeeper 동작은 재검증하지 않았습니다. 이전 0.1.0의 입력 결과는 VERIFICATION.md에 별도로 보존합니다.
 
 회사 Mac에서 0.1.1의 새 보조 앱을 등록한 뒤 포인터를 미러링 창 밖에 두고 home → search → app-switcher → home을 확인해야 합니다. inspect와 dry-run은 포인터를 움직이지 않습니다.
+
+## 전달 ZIP 검사
+
+압축을 풀어 다른 경로로 옮긴 ZIP에서 내부 검증 통과, --help, REPL 버전 0.1.1과 quit, 잘못된 좌표의 JSON 오류·종료 코드 2, helper 코드 서명·실행 파일 해시·ZIP CRC를 확인했습니다. PATH는 /usr/bin:/bin으로 제한하여 외부 Python·Homebrew 실행 명령에 의존하지 않음을 확인했습니다.
+
+실제 독립 배포 CLI를 PATH에서 우선 선택하고 CLI_ANYTHING_FORCE_INSTALLED=1로 실행한 최종 전체 테스트도 29 passed, 0 skipped (6.80초)였습니다. 이는 실기기 입력 자동 성공 판정을 의미하지 않습니다.

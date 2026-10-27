@@ -35,8 +35,8 @@ and authentication also require the user. Do not alter authentication settings.
 - `inspect [--output PATH]`: bounded actual AX state, optionally saved to a new JSON file.
 - `launch`: open the installed Apple app.
 - `home`, `app-switcher`: invoke the actual Apple navigation buttons via AXPress.
-  If hidden, hover the pointer over the verified window toolbar and retry up to
-  0.75s. The pointer stays there. `search` uses this same Home step. Read-only
+  If hidden, hover the pointer over the verified window toolbar and retry at most
+  five times with 150ms waits. The pointer stays there. `search` uses this same Home step. Read-only
   inspect/status and dry-run never move the pointer. Focus/window changes abort.
 - `search TEXT`: Home, wait for transition, View → Spotlight, then query input;
   no result selection. Menu lookup supports Korean and English.

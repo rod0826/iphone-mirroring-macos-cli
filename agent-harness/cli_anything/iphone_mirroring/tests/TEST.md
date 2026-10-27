@@ -28,3 +28,5 @@ python scripts/test-native.py
 Python 29 passed, 0 skipped (1.53초). Swift 10사례 통과.
 새 보조 앱의 AX 권한 부재를 호스트 테스트의 명시적 오류 경로로 확인했으며,
 실제 기기 입력 성공으로 세지 않습니다. docs/verification-0.1.1.md 참고.
+
+독립 배포 CLI 대상 최종 전체 테스트: 29 passed, 0 skipped (6.80초). 새 앱 권한 재등록 후 읽기 진단이 정상이며, 실기기 전체 시나리오는 연결 끊김으로 미완입니다.
