@@ -83,6 +83,7 @@ def main():
                 'python': sys.version.split()[0], 'helper_sha256': hashlib.sha256((target/'Contents/MacOS/IPhoneMirroringCLI').read_bytes()).hexdigest()}
     (destination/'BUILD.json').write_text(json.dumps(manifest, indent=2)+'\n')
     shutil.copy2(ROOT/'docs/verification-0.1.2.md', destination/'PACKAGE-VERIFICATION.md')
+    shutil.copy2(ROOT/'docs/signing-and-permissions.md', destination/'signing-and-permissions.md')
     archive = finalize_archive(destination)
     print(archive)
 
