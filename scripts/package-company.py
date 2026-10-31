@@ -11,7 +11,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = 'IPhone-Mirroring-CLI-0.1.1-company-test-arm64'
+NAME = 'IPhone-Mirroring-CLI-0.1.2-company-test-arm64'
 
 
 def finalize_archive(destination):
@@ -78,11 +78,11 @@ def main():
     shutil.copy2(ROOT/'scripts/start.command', destination/'시작.command')
     for item in ['설치.command', '시작.command']:
         (destination/item).chmod(0o755)
-    manifest = {'version': '0.1.1', 'architecture': 'arm64',
+    manifest = {'product': 'iphone-mirroring-macos-cli', 'version': '0.1.2', 'architecture': 'arm64',
                 'source_commit': subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip(),
                 'python': sys.version.split()[0], 'helper_sha256': hashlib.sha256((target/'Contents/MacOS/IPhoneMirroringCLI').read_bytes()).hexdigest()}
     (destination/'BUILD.json').write_text(json.dumps(manifest, indent=2)+'\n')
-    shutil.copy2(ROOT/'docs/verification-0.1.1.md', destination/'PACKAGE-VERIFICATION.md')
+    shutil.copy2(ROOT/'docs/verification-0.1.2.md', destination/'PACKAGE-VERIFICATION.md')
     archive = finalize_archive(destination)
     print(archive)
 

@@ -10,6 +10,11 @@ KEYS = ('return', 'escape', 'tab', 'backspace', 'up', 'down', 'left', 'right')
 def request(operation, dry_run=False, **arguments):
     if operation not in OPERATIONS:
         raise ValueError('Unknown operation')
+    if operation == 'home':
+        presses = arguments.get('home_presses', 2)
+        if type(presses) is not int or presses not in (1, 2):
+            raise ValueError('Home presses must be 1 or 2.')
+        arguments['home_presses'] = presses
     if operation in {'type', 'search'}:
         text = arguments.get('text', '')
         if not text or len(text) > 1000 or '\x00' in text:

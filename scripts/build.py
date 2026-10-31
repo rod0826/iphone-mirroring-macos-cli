@@ -13,7 +13,7 @@ CACHE = ROOT / 'build/swift-module-cache'
 CACHE.mkdir(parents=True, exist_ok=True)
 subprocess.run(['xcrun', 'swiftc', '-O', '-module-cache-path', str(CACHE),
                 '-target', f'{platform.machine()}-apple-macosx15.0',
-                str(ROOT / 'native/WindowPolicy.swift'), str(ROOT / 'native/NavigationPolicy.swift'),
+                str(ROOT / 'native/Errors.swift'), str(ROOT / 'native/WindowPolicy.swift'), str(ROOT / 'native/NavigationPolicy.swift'),
                 str(ROOT / 'native/main.swift'),
                 '-o', str(TARGET)], check=True)
 with (APP / 'Contents/Info.plist').open('wb') as stream:
@@ -21,7 +21,7 @@ with (APP / 'Contents/Info.plist').open('wb') as stream:
         'CFBundleIdentifier': 'local.cli-anything.iphone-mirroring',
         'CFBundleName': 'iPhone Mirroring CLI',
         'CFBundleExecutable': 'IPhoneMirroringCLI', 'CFBundlePackageType': 'APPL',
-        'CFBundleShortVersionString': '0.1.1', 'CFBundleVersion': '2',
+        'CFBundleShortVersionString': '0.1.2', 'CFBundleVersion': '3',
         'LSUIElement': True, 'LSMinimumSystemVersion': '15.0',
         'NSAccessibilityUsageDescription': '요청한 iPhone 미러링 창 조회와 기본 입력을 수행합니다.',
     }, stream)

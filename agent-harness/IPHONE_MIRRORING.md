@@ -10,7 +10,7 @@ preview bundles are not applicable or claimed.
 | doctor | Bundle metadata, NSRunningApplication, AXIsProcessTrusted |
 | launch | NSWorkspace.openApplication |
 | status / inspect | AXUIElementCopyAttributeValue on the real Apple process |
-| home / app-switcher | AXPress on app.grid.3x3 / iphone.app.switcher |
+| home / app-switcher | Home defaults to two spaced AXPress actions (one optional); App Switcher one AXPress |
 | search | Home AXPress, remote transition wait, visible View → Spotlight AXPress, Unicode input |
 | type | CGEvent Unicode keyboard events addressed to app PID |
 | key / click / scroll | CGEvent HID keyboard / mouse / pixel-scroll events after focus and window checks |
@@ -24,3 +24,5 @@ The helper does not request Accessibility permission. Quartz posting is
 asynchronous, so the short-lived helper stays alive briefly after posting.
 Responses acknowledge requests, not iPhone-side completion. Device observations
 and remaining validation limits are documented separately in VERIFICATION.md.
+
+0.1.2 adds --version and doctor --reveal-helper (explicit Finder request only), a zero-AX-window error, and a fixed-path staged installer with backups. Code-signing permission continuity remains unverified.

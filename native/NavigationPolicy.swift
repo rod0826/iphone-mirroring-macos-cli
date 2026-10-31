@@ -12,3 +12,10 @@ func resolveNavigationControl<Control>(read: () throws -> Control?, validate: ()
     }
     return nil
 }
+
+func performHomeSequence(presses: Int, press: () throws -> Void, wait: () -> Void) throws {
+    for index in 0..<presses {
+        if index > 0 { wait() }
+        try press()
+    }
+}

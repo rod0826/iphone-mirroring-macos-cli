@@ -7,7 +7,8 @@ import sys
 import click
 
 from .core.service import KEYS, request
-from .utils.backend import BackendError
+from .utils.backend import BackendError, reveal_helper
+from . import __version__
 
 
 def emit(data):
@@ -36,6 +37,7 @@ def invoke(ctx, operation, **arguments):
 
 
 @click.group(cls=JsonGroup, invoke_without_command=True)
+@click.version_option(__version__, prog_name='cli-anything-iphone-mirroring')
 @click.option('--json', 'as_json', is_flag=True, help='Machine-readable output (also the default).')
 @click.option('--dry-run', is_flag=True, help='Check preconditions without launching or posting input.')
 @click.pass_context
@@ -46,13 +48,34 @@ def cli(ctx, as_json, dry_run):
         ctx.invoke(repl)
 
 
-for name in ('doctor', 'status', 'launch', 'home', 'app-switcher'):
+for name in ('status', 'launch', 'app-switcher'):
     def register(name):
         @cli.command(name)
         @click.pass_context
         def command(ctx):
             invoke(ctx, name)
     register(name)
+
+
+@cli.command()
+@click.option('--reveal-helper', 'reveal', is_flag=True, help='Select the helper .app in Finder; never grants permissions.')
+@click.pass_context
+def doctor(ctx, reveal):
+    data = request('doctor', dry_run=ctx.obj['dry_run'])
+    data['cli_version'] = __version__
+    if reveal:
+        if not ctx.obj['dry_run']:
+            reveal_helper()
+        data['helper_revealed'] = not ctx.obj['dry_run']
+    emit(data)
+
+
+@cli.command()
+@click.option('--presses', type=click.IntRange(1, 2), default=2, show_default=True,
+              help='Spaced Home actions; two dismiss an underlying Spotlight after App Switcher.')
+@click.pass_context
+def home(ctx, presses):
+    invoke(ctx, 'home', home_presses=presses)
 
 
 @cli.command()
@@ -118,7 +141,7 @@ def repl(ctx):
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
 
-    skin = ReplSkin('iphone_mirroring', version='0.1.1', history_file='/dev/null')
+    skin = ReplSkin('iphone_mirroring', version='0.1.2', history_file='/dev/null')
     skin.skill_install_cmd = 'Use the project .venv; installation is documented in README.md'
     session = PromptSession(history=InMemoryHistory()) if sys.stdin.isatty() else None
     skin.print_banner()

@@ -57,7 +57,7 @@ def test_real_accessibility_observation_or_explicit_blocker():
             assert window['nodes'] and window['nodes'][0]['role']
     else:
         assert result.returncode == 1
-        assert data['error']['code'] in {'ACCESSIBILITY_REQUIRED', 'APP_NOT_RUNNING'}
+        assert data['error']['code'] in {'ACCESSIBILITY_REQUIRED', 'APP_NOT_RUNNING', 'NO_ACCESSIBLE_WINDOWS'}
         print(f'\nHOST OBSERVATION BLOCKED: {data["error"]["code"]}; not a device-test pass.')
     ARTIFACTS.mkdir(exist_ok=True)
     (ARTIFACTS / 'inspect.json').write_text(result.stdout, encoding='utf-8')

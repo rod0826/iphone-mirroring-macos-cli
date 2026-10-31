@@ -31,7 +31,7 @@ def test_dry_run_only_probes_preconditions():
     }) as backend:
         result = CliRunner().invoke(cli, ['--json', '--dry-run', 'home'])
     assert result.exit_code == 0
-    assert backend.call_args.args[0] == {'operation': 'home', 'dry_run': True}
+    assert backend.call_args.args[0] == {'operation': 'home', 'dry_run': True, 'home_presses': 2}
 
 
 def test_text_not_echoed_in_response():

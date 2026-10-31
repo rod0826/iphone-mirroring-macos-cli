@@ -15,6 +15,17 @@ class BackendError(RuntimeError):
         super().__init__(f'{code}: {message}')
 
 
+def reveal_helper():
+    if not APP.is_dir():
+        raise BackendError('HELPER_MISSING', 'Build or install the helper app first.')
+    try:
+        result = subprocess.run(['/usr/bin/open', '-R', str(APP)], capture_output=True, text=True, timeout=10)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise BackendError('FINDER_REVEAL_FAILED', 'Finder did not open; locate helper_bundle from doctor manually.') from exc
+    if result.returncode:
+        raise BackendError('FINDER_REVEAL_FAILED', 'Could not select the helper in Finder.')
+
+
 def _execute(payload):
     # LaunchServices avoids inheriting the terminal/agent's Accessibility identity.
     # Each invocation gets private, expiring IPC files removed on exit or timeout.

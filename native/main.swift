@@ -9,15 +9,6 @@ var ipcDirectory: URL?
 var requestExpiry: Date?
 let inputSource = CGEventSource(stateID: .hidSystemState)
 
-struct Failure: Error {
-    let code: String
-    let message: String
-}
-
-func fail(_ code: String, _ message: String) throws -> Never {
-    throw Failure(code: code, message: message)
-}
-
 func attribute(_ element: AXUIElement, _ name: String) -> CFTypeRef? {
     var value: CFTypeRef?
     guard AXUIElementCopyAttributeValue(element, name as CFString, &value) == .success else { return nil }
@@ -110,7 +101,7 @@ func inspect(_ window: AXUIElement) -> [String: Any] {
 }
 
 func target(_ app: NSRunningApplication) throws -> (AXUIElement, CGRect) {
-    let items = try windows(app).filter { window in
+    let items = try requireObservableWindows(windows(app)).filter { window in
         guard let bounds = frame(window) else { return true }
         return !isSharingIndicator(title: text(window, kAXTitleAttribute),
             childTitles: elements(window, kAXChildrenAttribute).map { text($0, kAXTitleAttribute) },
@@ -274,7 +265,8 @@ func handle(_ input: [String: Any]) throws -> [String: Any] {
                 "accessibility_trusted": AXIsProcessTrusted(), "helper": CommandLine.arguments[0],
                 "helper_bundle": Bundle.main.bundleURL.path,
                 "running": !NSRunningApplication.runningApplications(withBundleIdentifier: bundleID).isEmpty,
-                "connection": "unknown", "permission_prompted": false]
+                "connection": "unknown", "permission_prompted": false,
+                "helper_version": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"]
     }
     guard installed else { try fail("APP_MISSING", "Apple iPhone Mirroring is not installed at the expected system path.") }
     if operation == "launch" {
@@ -295,12 +287,16 @@ func handle(_ input: [String: Any]) throws -> [String: Any] {
     }
     let app = try running()
     if operation == "status" || operation == "inspect" {
-        let items = try windows(app)
+        let items = try requireObservableWindows(windows(app))
         var result: [String: Any] = ["ok": true, "pid": app.processIdentifier,
             "running": true, "frontmost": NSWorkspace.shared.frontmostApplication?.processIdentifier == app.processIdentifier,
             "connection": "unknown", "windows": items.map(windowJSON)]
         if operation == "inspect" { result["accessibility"] = items.map(inspect) }
         return result
+    }
+    let homePresses = input["home_presses"] as? Int ?? 2
+    if operation == "home" && !(1...2).contains(homePresses) {
+        try fail("INVALID_ARGUMENT", "Home presses must be 1 or 2.")
     }
     let (window, bounds) = try target(app)
     // Validate all request fields before any activation or event posting.
@@ -340,13 +336,17 @@ func handle(_ input: [String: Any]) throws -> [String: Any] {
         try fail("WINDOW_CHANGED", "Target window changed during activation; inspect and retry.")
     }
     switch operation {
-    case "home", "app-switcher": try navigate(operation, current, app)
+    case "home":
+        try performHomeSequence(presses: homePresses, press: { try navigate("home", current, app) },
+                                wait: { Thread.sleep(forTimeInterval: 0.6) })
+    case "app-switcher": try navigate(operation, current, app)
     case "key": try key(keyCodes[keyName]!, [], app)
     case "type": try typeText(value, app)
     case "search":
         // Spotlight is a toggle. Establish Home first and let the remote
         // transition finish before opening it, including on repeated searches.
-        try navigate("home", current, app)
+        try performHomeSequence(presses: 2, press: { try navigate("home", current, app) },
+                                wait: { Thread.sleep(forTimeInterval: 0.6) })
         Thread.sleep(forTimeInterval: 0.6)
         _ = try target(app)
         try navigate(operation, current, app)
@@ -374,10 +374,12 @@ func handle(_ input: [String: Any]) throws -> [String: Any] {
     // Quartz delivery is asynchronous. Do not exit the short-lived app while
     // WindowServer is still consuming its events and sender audit identity.
     Thread.sleep(forTimeInterval: 0.2)
-    return ["ok": true, "operation": operation,
+    var response: [String: Any] = ["ok": true, "operation": operation,
             "delivery": ["home", "app-switcher", "search"].contains(operation) ? "requested" : "posted",
             "verified": false, "connection": "unknown",
             "note": "Mac UI action requested or events posted; verify the iPhone-side effect visually."]
+    if operation == "home" || operation == "search" { response["home_presses"] = operation == "home" ? homePresses : 2 }
+    return response
 }
 
 func output(_ value: [String: Any], _ exitCode: Int32) -> Never {
@@ -403,6 +405,16 @@ do {
         data = try Data(contentsOf: directory.appendingPathComponent("request.json"))
     } else {
         data = FileHandle.standardInput.readDataToEndOfFile()
+    }
+    if data.isEmpty && ipcDirectory == nil && Bundle.main.bundleURL.pathExtension == "app" {
+        NSApplication.shared.setActivationPolicy(.accessory)
+        let alert = NSAlert()
+        alert.messageText = "iPhone Mirroring CLI 보조 앱"
+        alert.informativeText = "이 앱은 CLI에서 실행하는 보조 앱입니다. 직접 실행해 iPhone을 연결하는 앱이 아닙니다.\n\n설치 폴더의 시작.command를 실행하거나 cli-anything-iphone-mirroring doctor --reveal-helper를 사용하세요. 손쉬운 사용 권한은 이 앱 번들에 등록합니다."
+        alert.addButton(withTitle: "확인")
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        alert.runModal()
+        exit(0)
     }
     guard data.count <= 65536, let request = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
         try fail("INVALID_ARGUMENT", "Expected one JSON request object, at most 64 KiB.")

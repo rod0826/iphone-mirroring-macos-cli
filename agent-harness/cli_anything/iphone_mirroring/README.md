@@ -6,7 +6,7 @@ Unofficial experimental project. Not affiliated with, endorsed by, or supported 
 
 이 저장소는 소스·문서 공개용입니다. 회사 Mac에서 시험할 설치 ZIP은 별도로 전달하며,
 실행 앱·설치 ZIP을 GitHub Releases에 게시하지 않습니다. GitHub의 자동 생성 소스 ZIP은
-설치 파일이 아닙니다. 0.1.1 전달 ZIP에는 `검증.command`와 `SHA256SUMS`가 포함돼
+설치 파일이 아닙니다. 0.1.2 전달 ZIP에는 `검증.command`와 `SHA256SUMS`가 포함돼
 ZIP 하나만으로 압축 해제 파일의 무결성을 확인할 수 있습니다. [회사 Mac 시험 안내](docs/company-mac-test.md)와
 [별도 전달 ZIP 설치 안내](docs/zip-install.md)를 참고하세요.
 
@@ -24,6 +24,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/build.py
 .venv/bin/python -m pip install --no-build-isolation -e ./agent-harness
 source .venv/bin/activate
+cli-anything-iphone-mirroring --version
 cli-anything-iphone-mirroring --json doctor
 ```
 
@@ -72,21 +73,24 @@ cli-anything-iphone-mirroring key escape
 cli-anything-iphone-mirroring
 ```
 
-- `doctor`: 설치 버전·실행 여부·접근성 권한 조회. 앱 실행이나 권한 요청 없음.
+- `--version`: 보조 앱 없이 CLI 버전 표시.
+- `doctor`: CLI·보조 앱·Apple 앱 버전과 실행·접근성 상태 조회. `doctor --reveal-helper`는 Finder에서 실제 보조 앱을 선택합니다. 권한을 부여하지 않으며 dry-run에서는 Finder도 열지 않습니다.
 - `status`: PID, 활성 여부, 창 제목·식별자·위치·크기. 미실행이면 명시적 오류.
 - `inspect`: 최대 깊이 8, 노드 300개까지 실제 접근성 트리 조회. iPhone 내부 요소
   요소는 현재 검증 환경에서 노출되지 않았습니다. `--output`은 기존 파일을 덮어쓰지 않습니다.
 - `launch`: 앱 실행. 연결 성공을 의미하지 않습니다.
-- `home` / `app-switcher`: Apple 앱의 실제 접근성 홈·앱 전환 버튼 호출.
+- `home`: 기본 2회(간격 0.6초) 홈 요청으로 앱 전환 뒤 남은 Spotlight를 닫도록 보완합니다. `home --presses 1`은 한 번 요청입니다. 화면 자동 검증은 없습니다.
+- `app-switcher`: Apple 앱의 실제 접근성 앱 전환 버튼 호출.
   버튼이 숨겨져 있으면 포인터를 창 상단으로 옮겨 호버로 드러낸 뒤 150ms 간격으로 최대 5회 재조회합니다.
   포인터를 복원하지 않으며 창·포커스가 바뀌면 중단합니다. `search`의 홈 이동도 같습니다.
   `inspect`와 `--dry-run`은 포인터를 이동하지 않습니다.
-- `search`: 홈으로 이동하고 전환을 기다린 뒤 보기 → Spotlight 메뉴를 열어 문자열을
+- `search`: 먼저 홈 2회를 요청하고 전환을 기다린 뒤 보기 → Spotlight 메뉴를 열어 문자열을
   입력합니다. 검색 중 다시 호출해도 동작하도록 홈에서 시작합니다. 메뉴 제목은
   현재 한국어·영어 환경을 지원합니다. 검색 결과를 선택하거나 실행하지 않습니다.
 - `type`: 포커스된 필드에 Unicode 이벤트 전달. 최대 1,000자이며 아주 긴 결합문자는
   거부합니다. 한글은 실기기에서 확인했으며 모든 이모지·입력기 조합은 검증하지 않았습니다.
 - `key`: return, escape, tab, backspace, up, down, left, right.
+  한글은 자모 단위로 삭제될 수 있습니다(회사 관찰: 날씨 → 날ㅆ → 날).
   return이나 클릭은 해당 앱에서 전송·제출을 유발할 수 있으니 대상을 확인하세요.
 - `click`: 창 좌상단 기준 **포인트** 좌표. 상단 40pt·하단 20pt를 제외합니다.
   레티나 스크린샷의 픽셀 좌표와 다릅니다. 콘텐츠 영역이 바뀌면 좌표를 재확인하세요.
@@ -132,7 +136,8 @@ PATH="$PWD/.venv/bin:$PATH" CLI_ANYTHING_FORCE_INSTALLED=1 \
 
 단위 테스트, 실제 앱 진단, 실기기 입력 검증은 따로 기록합니다.
 실기기 미연결이나 접근성 권한 부재를 입력 성공으로 집계하지 않습니다.
-0.1.1 회귀 검증은 `docs/verification-0.1.1.md`를 참고하세요.
+0.1.2 검증은 `docs/verification-0.1.2.md`를 참고하세요. 실행 중 AX 창이 0개이면
+`NO_ACCESSIBLE_WINDOWS` 오류를 반환합니다. 다른 Space·창 숨김 등을 확인하고 현재 데스크톱에서 재시도하세요.
 초기 PoC의 구체적인 결과는 `VERIFICATION.md`와 `agent-harness/cli_anything/iphone_mirroring/tests/TEST.md`를 보세요.
 
 ## 라이선스와 출처
@@ -157,3 +162,9 @@ python scripts/package-company.py \
 빌드 스크립트는 release/에 ZIP과 SHA-256 파일을 만들며 업로드하지 않습니다.
 런타임의 Python·동적 라이브러리·의존성 라이선스 자료를 --notices로 전달해야 합니다.
 배포 전 압축 해제·이동 후 실행, 앱 서명, helper 원본 일치, 문서와 라이선스를 확인하세요.
+
+## 0.1.2 설치·서명
+
+설치 위치는 `~/Applications/IPhone-Mirroring-CLI`로 고정했습니다. 같은 제품의 기존 설치본만 보관 후 교체하며, 옛 버전별 경로는 자동 삭제하지 않습니다. 설치기는 격리 속성을 제거하지 않습니다. 고정 경로에서도 ad-hoc 서명은 권한 재등록이 필요할 수 있습니다. [서명 검토와 남은 과제](docs/signing-and-permissions.md)를 참고하세요.
+
+보조 앱을 직접 실행하면 CLI용 앱이라는 안내 창을 표시합니다. 실제 명령은 시작.command 또는 CLI로 실행하세요.

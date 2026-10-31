@@ -1,5 +1,12 @@
 # Changes
 
+## 0.1.2 — 2026-10-31
+
+- #3: Home defaults to two spaced requests; home --presses 1 preserves the raw one-press behavior. Search uses the same two-press baseline. Document Korean jamo deletion.
+- #4: return NO_ACCESSIBLE_WINDOWS instead of empty success; add --version, doctor CLI/helper versions and --reveal-helper; show a direct-launch helper guide.
+- Install to a fixed user path, verify staged files and keep a backup when replacing this product. Refuse unrelated folders and symlinks.
+- Signing-based permission continuity and quarantine-free distribution remain unresolved; no available signing identity, no automatic security changes.
+
 ## 0.1.1 — 2026-10-27
 
 - Fixed #1: reveal hidden Home/App Switcher controls with hover and bounded AX retries; abort on changed window/focus. Search uses the same Home path.

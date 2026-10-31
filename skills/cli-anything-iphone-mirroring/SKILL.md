@@ -30,15 +30,17 @@ and authentication also require the user. Do not alter authentication settings.
 
 ## Command surface
 
-- `doctor`: app version, installation, running status, Accessibility trust.
+- `--version`: CLI version without launching the helper.
+- `doctor [--reveal-helper]`: CLI/helper/Apple versions, running state and Accessibility trust. Explicit reveal selects the .app in Finder; dry-run never opens Finder or grants access.
 - `status`: process and window metadata.
 - `inspect [--output PATH]`: bounded actual AX state, optionally saved to a new JSON file.
 - `launch`: open the installed Apple app.
-- `home`, `app-switcher`: invoke the actual Apple navigation buttons via AXPress.
+- `home [--presses 1|2]`: two spaced Home AXPress actions by default, to dismiss an underlying Spotlight after App Switcher. One press preserves the raw behavior. This is bounded best effort, never visual verification.
+- `app-switcher`: one actual navigation AXPress.
   If hidden, hover the pointer over the verified window toolbar and retry at most
   five times with 150ms waits. The pointer stays there. `search` uses this same Home step. Read-only
   inspect/status and dry-run never move the pointer. Focus/window changes abort.
-- `search TEXT`: Home, wait for transition, View → Spotlight, then query input;
+- `search TEXT`: two spaced Home actions, wait for transition, View → Spotlight, then query input;
   no result selection. Menu lookup supports Korean and English.
 - `type TEXT`: Unicode text into the focused field, without pressing Return.
 - `click X Y`: window-relative points, excluding top 40pt and bottom 20pt.
@@ -64,9 +66,11 @@ blindly retry input after a timeout: it might have partially executed.
 The helper rejects missing Accessibility, setup, modal dialogs, minimized or
 ambiguous windows and changed focus. It does not classify every possible
 connection/error screen. Return or a click can submit in the focused iPhone app;
-only use actions within the user's requested task.
+only use actions within the user's requested task. Korean Backspace may delete a jamo rather than a complete syllable (observed: 날씨 → 날ㅆ → 날).
 
 This is a GUI-adapter PoC using CLI-Anything packaging and REPL conventions.
 There is no iPhone data API, private-framework backend, undo/redo, persistent
 remote session restoration, screenshot preview protocol, or headless support.
 Host integration tests are not proof of connected-device input success.
+
+A running app with zero AX windows returns NO_ACCESSIBLE_WINDOWS. Check the current Space and hidden windows; do not infer phone disconnection. Company ZIP installs at ~/Applications/IPhone-Mirroring-CLI, but ad-hoc signing can still require a fresh Accessibility grant after updates.
