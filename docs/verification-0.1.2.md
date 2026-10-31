@@ -22,4 +22,8 @@ Home 2회 정책은 회사 관찰과 상태 모델 회귀에 기반합니다. �
 보조 앱을 직접 실행할 때의 안내 창은 구현했으나 Computer Use 호출이 시간 초과되어 화면 확인을 완료하지 못했습니다. 다른 Space에서의 실제 AX 0개 조건도 현장 재확인이 필요합니다.
 서명 인증서가 없어 자체 서명의 TCC 연속성과 Developer ID 공증·격리 없는 회사 배포는 미검증이며 해결됐다고 표시하지 않습니다. [서명 검토](signing-and-permissions.md) 참고.
 
-전체 호스트 실행: Python 43 passed, 0 skipped (1.49초).새 서명의 AX 권한 부재는 명시적 ACCESSIBILITY_REQUIRED 경로로 검사했으며 실기기 입력 성공과 구분합니다.
+전체 호스트 실행: Python 43 passed, 0 skipped (1.49초). doctor는 CLI·보조 앱 버전 0.1.2와 접근성 권한 false를 확인했습니다. inspect는 APP_NOT_RUNNING을 반환했습니다. 실행 환경의 차단 상태를 입력 성공으로 세지 않습니다.
+
+## 독립 ZIP 최종 검사
+
+독립 배포 CLI를 CLI_ANYTHING_FORCE_INSTALLED=1로 선택한 전체 테스트도 43 passed, 0 skipped (6.74초)였습니다. 실제 ZIP을 새 임시 경로에 압축 해제해 검증한 뒤 고정 경로 신규 설치 및 재설치·기존본 보관을 확인했습니다. 설치된 CLI의 --version, doctor/home의 --help와 helper 서명 검사도 통과했습니다. 외부 Python·Homebrew가 없는 PATH=/usr/bin:/bin 조건에서 검사했습니다. 실기기 입력과 GUI 화면 확인을 의미하지 않습니다.

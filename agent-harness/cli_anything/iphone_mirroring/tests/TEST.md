@@ -36,3 +36,5 @@ Python 29 passed, 0 skipped (1.53초). Swift 10사례 통과.
 홈 2회 기본값과 1회 선택, 검색의 2회 홈 기준 정립, 빈 AX 창 오류, 버전 표시, Finder 위치 표시의 dry-run, 고정 설치 경로 업데이트·백업·알 수 없는 기존 경로 거부·quarantine 보존을 검증합니다. 서명 인증서 변경이나 자동 권한 부여는 수행하지 않습니다.
 
 0.1.2: Python 전체 43 passed, 0 skipped (1.49초), Swift 15사례 통과. 실제 iPhone 입력과 직접 실행 안내 창은 이번에 화면 검증하지 못했습니다. docs/verification-0.1.2.md 참고.
+
+0.1.2 독립 배포 CLI 전체: 43 passed, 0 skipped (6.74초). 실제 ZIP의 신규 설치·고정 경로 교체·보관, 버전·도움말·코드 서명 검사 통과.

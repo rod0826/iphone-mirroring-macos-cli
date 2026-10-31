@@ -408,6 +408,7 @@ do {
     }
     if data.isEmpty && ipcDirectory == nil && Bundle.main.bundleURL.pathExtension == "app" {
         NSApplication.shared.setActivationPolicy(.accessory)
+        NSApplication.shared.finishLaunching()
         let alert = NSAlert()
         alert.messageText = "iPhone Mirroring CLI 보조 앱"
         alert.informativeText = "이 앱은 CLI에서 실행하는 보조 앱입니다. 직접 실행해 iPhone을 연결하는 앱이 아닙니다.\n\n설치 폴더의 시작.command를 실행하거나 cli-anything-iphone-mirroring doctor --reveal-helper를 사용하세요. 손쉬운 사용 권한은 이 앱 번들에 등록합니다."

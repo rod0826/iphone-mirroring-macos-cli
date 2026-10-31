@@ -54,7 +54,7 @@ Mac UI 제어를 허용하는 권한이며 iPhone 내부 API 접근 권한을 �
 ## 명령
 
 모든 일반 응답과 오류는 JSON입니다. `--json`, `--dry-run`은 명령 **앞에** 둡니다.
-`--help`와 사람용 REPL 안내는 텍스트입니다.
+`--help`, `--version`과 사람용 REPL 안내는 텍스트입니다.
 
 ```bash
 cli-anything-iphone-mirroring --json doctor
