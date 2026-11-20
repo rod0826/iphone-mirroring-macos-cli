@@ -10,7 +10,7 @@ from cli_anything.iphone_mirroring.core.service import request
 
 def test_version_requires_no_native_helper():
     result = CliRunner().invoke(cli, ['--version'])
-    assert result.exit_code == 0 and '0.1.2' in result.output
+    assert result.exit_code == 0 and '0.1.3' in result.output
 
 
 @pytest.mark.parametrize('args,presses', [(['home'], 2), (['home','--presses','1'], 1)])
@@ -33,7 +33,7 @@ def test_doctor_reports_cli_version():
     with patch('cli_anything.iphone_mirroring.core.service.call', return_value={'ok':True}):
         result = CliRunner().invoke(cli, ['doctor'])
     assert result.exit_code == 0
-    assert json.loads(result.output)['cli_version'] == '0.1.2'
+    assert json.loads(result.output)['cli_version'] == '0.1.3'
 
 
 def test_reveal_is_explicit_and_dry_run_does_not_open_finder():

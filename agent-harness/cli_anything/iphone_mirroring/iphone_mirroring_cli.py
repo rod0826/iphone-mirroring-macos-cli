@@ -141,7 +141,7 @@ def repl(ctx):
     from prompt_toolkit import PromptSession
     from prompt_toolkit.history import InMemoryHistory
 
-    skin = ReplSkin('iphone_mirroring', version='0.1.2', history_file='/dev/null')
+    skin = ReplSkin('iphone_mirroring', version=__version__, history_file='/dev/null')
     skin.skill_install_cmd = 'Use the project .venv; installation is documented in README.md'
     session = PromptSession(history=InMemoryHistory()) if sys.stdin.isatty() else None
     skin.print_banner()

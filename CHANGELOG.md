@@ -1,5 +1,10 @@
 # Changes
 
+## 0.1.3 — 2026-11-20
+
+- Added an original GPT Image icon to the signed macOS helper and project README.
+- Final personal test version (build 4). Development concluded and the source was frozen at tag `v0.1.3`.
+
 ## 0.1.2 — 2026-10-31
 
 - #3: Home defaults to two spaced requests; home --presses 1 preserves the raw one-press behavior. Search uses the same two-press baseline. Document Korean jamo deletion.
