@@ -1,12 +1,20 @@
 # iPhone Mirroring CLI for macOS — 실험용 PoC
 
+<img src="assets/AppIcon-1024.png" width="112" alt="iPhone Mirroring CLI 아이콘">
+
+> **개인 테스트용 최종 버전 · 0.1.3 (빌드 4) · 2026-11-20 버전 동결**
+>
+> 개인 테스트용 개발을 0.1.3에서 종료했습니다. 이후 기능 추가, 호환성 업데이트, 새 버전 배포 계획은 없습니다. 동결된 소스는 [`v0.1.3` 태그](https://github.com/rod0826/iphone-mirroring-macos-cli/tree/v0.1.3)에 보존합니다.
+>
+> **Final personal test version · 0.1.3 (build 4) · Frozen on 2026-11-20.** No further features, compatibility updates, or releases are planned.
+
 **비공식 실험용 프로젝트입니다. Apple의 검토·승인·인증을 받지 않았으며, Apple이 제공하거나 지원하는 제품이 아닙니다.**
 
 Unofficial experimental project. Not affiliated with, endorsed by, or supported by Apple.
 
-이 저장소는 소스·문서 공개용입니다. 회사 Mac에서 시험할 설치 ZIP은 별도로 전달하며,
+이 저장소는 소스·문서 공개용입니다. 개인 테스트용 설치 ZIP은 별도로 보관하며,
 실행 앱·설치 ZIP을 GitHub Releases에 게시하지 않습니다. GitHub의 자동 생성 소스 ZIP은
-설치 파일이 아닙니다. 0.1.2 전달 ZIP에는 `검증.command`와 `SHA256SUMS`가 포함돼
+설치 파일이 아닙니다. 0.1.3 전달 ZIP에는 `검증.command`와 `SHA256SUMS`가 포함돼
 ZIP 하나만으로 압축 해제 파일의 무결성을 확인할 수 있습니다. [회사 Mac 시험 안내](docs/company-mac-test.md)와
 [별도 전달 ZIP 설치 안내](docs/zip-install.md)를 참고하세요.
 
@@ -136,7 +144,7 @@ PATH="$PWD/.venv/bin:$PATH" CLI_ANYTHING_FORCE_INSTALLED=1 \
 
 단위 테스트, 실제 앱 진단, 실기기 입력 검증은 따로 기록합니다.
 실기기 미연결이나 접근성 권한 부재를 입력 성공으로 집계하지 않습니다.
-0.1.2 검증은 `docs/verification-0.1.2.md`를 참고하세요. 실행 중 AX 창이 0개이면
+최종 버전의 검증 범위는 `docs/verification-0.1.3.md`를 참고하세요. 실행 중 AX 창이 0개이면
 `NO_ACCESSIBLE_WINDOWS` 오류를 반환합니다. 다른 Space·창 숨김 등을 확인하고 현재 데스크톱에서 재시도하세요.
 초기 PoC의 구체적인 결과는 `VERIFICATION.md`와 `agent-harness/cli_anything/iphone_mirroring/tests/TEST.md`를 보세요.
 
@@ -147,7 +155,7 @@ PATH="$PWD/.venv/bin:$PATH" CLI_ANYTHING_FORCE_INSTALLED=1 \
 [NOTICE](NOTICE)와 [상위 프로젝트 라이선스](THIRD_PARTY_LICENSES/CLI-Anything-APACHE.txt)를 함께 제공합니다.
 Apple 앱 바이너리는 포함하지 않습니다. iPhone·macOS 및 관련 상표는 각 권리자에게 귀속됩니다.
 
-## 회사 테스트 ZIP 빌드
+## 개인 테스트 ZIP 빌드
 
 Apple Silicon macOS에서 PyInstaller 6.22.3, Python 3.12.14와 런타임 라이선스 자료를 준비합니다.
 CLI 런타임은 Click 8.5.0, prompt_toolkit 3.0.53, wcwidth 0.9.2, Pygments 2.21.0을 사용했습니다.
@@ -163,7 +171,7 @@ python scripts/package-company.py \
 런타임의 Python·동적 라이브러리·의존성 라이선스 자료를 --notices로 전달해야 합니다.
 배포 전 압축 해제·이동 후 실행, 앱 서명, helper 원본 일치, 문서와 라이선스를 확인하세요.
 
-## 0.1.2 설치·서명
+## 설치 위치와 서명
 
 설치 위치는 `~/Applications/IPhone-Mirroring-CLI`로 고정했습니다. 같은 제품의 기존 설치본만 보관 후 교체하며, 옛 버전별 경로는 자동 삭제하지 않습니다. 설치기는 격리 속성을 제거하지 않습니다. 고정 경로에서도 ad-hoc 서명은 권한 재등록이 필요할 수 있습니다. [서명 검토와 남은 과제](docs/signing-and-permissions.md)를 참고하세요.
 

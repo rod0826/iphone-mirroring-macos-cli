@@ -1,4 +1,4 @@
-"""Build an offline, per-user company-test ZIP; never uploads artifacts."""
+"""Build an offline, personal-test ZIP; never uploads artifacts."""
 import argparse
 import hashlib
 import json
@@ -6,12 +6,16 @@ import importlib.metadata as metadata
 import os
 from pathlib import Path
 import platform
+import plistlib
+import runpy
 import shutil
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-NAME = 'IPhone-Mirroring-CLI-0.1.2-company-test-arm64'
+PACKAGE = ROOT / 'agent-harness/cli_anything/iphone_mirroring'
+VERSION = runpy.run_path(str(PACKAGE / '__init__.py'))['__version__']
+NAME = f'IPhone-Mirroring-CLI-{VERSION}-personal-test-arm64'
 
 
 def finalize_archive(destination):
@@ -42,6 +46,15 @@ def main():
     helper = args.helper.resolve()
     if not (helper/'Contents/MacOS/IPhoneMirroringCLI').is_file():
         parser.error('Missing helper app; build it with scripts/build.py first.')
+    try:
+        info = plistlib.loads((helper/'Contents/Info.plist').read_bytes())
+    except (OSError, plistlib.InvalidFileException):
+        parser.error('Missing or invalid helper Info.plist.')
+    if info.get('CFBundleShortVersionString') != VERSION:
+        parser.error(f'Helper version must match CLI version {VERSION}; rebuild the helper.')
+    if (info.get('CFBundleIconFile') != 'AppIcon.icns'
+            or not (helper/'Contents/Resources/AppIcon.icns').is_file()):
+        parser.error('Missing helper app icon; rebuild the helper.')
     if not args.notices.is_dir():
         parser.error('Runtime license directory is required.')
     subprocess.run(['codesign', '--verify', '--strict', str(helper)], check=True)
@@ -78,11 +91,11 @@ def main():
     shutil.copy2(ROOT/'scripts/start.command', destination/'시작.command')
     for item in ['설치.command', '시작.command']:
         (destination/item).chmod(0o755)
-    manifest = {'product': 'iphone-mirroring-macos-cli', 'version': '0.1.2', 'architecture': 'arm64',
+    manifest = {'product': 'iphone-mirroring-macos-cli', 'version': VERSION, 'architecture': 'arm64',
                 'source_commit': subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip(),
                 'python': sys.version.split()[0], 'helper_sha256': hashlib.sha256((target/'Contents/MacOS/IPhoneMirroringCLI').read_bytes()).hexdigest()}
     (destination/'BUILD.json').write_text(json.dumps(manifest, indent=2)+'\n')
-    shutil.copy2(ROOT/'docs/verification-0.1.2.md', destination/'PACKAGE-VERIFICATION.md')
+    shutil.copy2(ROOT/f'docs/verification-{VERSION}.md', destination/'PACKAGE-VERIFICATION.md')
     shutil.copy2(ROOT/'docs/signing-and-permissions.md', destination/'signing-and-permissions.md')
     archive = finalize_archive(destination)
     print(archive)
